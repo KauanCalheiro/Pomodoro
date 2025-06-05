@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot Mobile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            width: 390px; 
+            height: 844px; 
+            background: #ffffff; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+        .header { 
+            height: 80px; 
+            background: #f8f9fa; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 20px;
+        }
+        .btn { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            border: none; 
+            cursor: pointer;
+        }
+        .btn-primary { background: #6366f1; }
+        .btn-secondary { background: #64748b; }
+        .main { 
+            padding: 20px; 
+            max-width: 350px; 
+            margin: 0 auto;
+        }
+        .card { 
+            background: #f1f5f9; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 16px; 
+            padding: 24px; 
+            margin-bottom: 24px;
+        }
+        .mode-buttons { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 32px;
+        }
+        .mode-btn { 
+            flex: 1; 
+            height: 35px; 
+            border-radius: 8px; 
+            border: none; 
+            font-size: 12px;
+        }
+        .mode-btn.active { background: #6366f1; color: white; }
+        .mode-btn.inactive { background: #e2e8f0; color: #64748b; }
+        .timer { 
+            text-align: center; 
+            font-size: 48px; 
+            font-weight: bold; 
+            color: #1f2937; 
+            margin-bottom: 16px;
+            font-family: monospace;
+        }
+        .progress { 
+            height: 8px; 
+            background: #e5e7eb; 
+            border-radius: 4px; 
+            margin-bottom: 32px;
+        }
+        .controls { 
+            display: flex; 
+            gap: 16px;
+        }
+        .control-btn { 
+            flex: 1; 
+            height: 40px; 
+            border-radius: 8px; 
+            border: none; 
+            font-size: 14px; 
+            color: white;
+        }
+        .start { background: #10b981; }
+        .reset { background: #f59e0b; }
+        .tasks { 
+            background: #f1f5f9; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 16px; 
+            padding: 24px;
+        }
+        .tasks h2 { 
+            font-size: 18px; 
+            margin-bottom: 16px; 
+            color: #1f2937;
+        }
+        .task-input { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 16px;
+        }
+        .task-input input { 
+            flex: 1; 
+            height: 35px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 8px; 
+            padding: 0 12px;
+        }
+        .task-input button { 
+            width: 50px; 
+            height: 35px; 
+            background: #6366f1; 
+            border: none; 
+            border-radius: 8px; 
+            color: white;
+        }
+        .task-item { 
+            display: flex; 
+            align-items: center; 
+            height: 30px; 
+            background: white; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 6px; 
+            padding: 0 12px; 
+            margin-bottom: 8px;
+        }
+        .task-checkbox { 
+            width: 16px; 
+            height: 16px; 
+            border-radius: 50%; 
+            background: #e5e7eb; 
+            margin-right: 12px;
+        }
+        .task-checkbox.done { background: #10b981; }
+        .task-text { 
+            font-size: 14px; 
+            color: #374151;
+        }
+        .task-text.done { 
+            color: #9ca3af; 
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="btn btn-primary"></button>
+        <button class="btn btn-secondary"></button>
+        <button class="btn btn-secondary"></button>
+    </div>
+    
+    <div class="main">
+        <div class="card">
+            <div class="mode-buttons">
+                <button class="mode-btn active">Pomodoro</button>
+                <button class="mode-btn inactive">Pausa Curta</button>
+                <button class="mode-btn inactive">Pausa Longa</button>
+            </div>
+            
+            <div class="timer">25:00</div>
+            <div class="progress"></div>
+            
+            <div class="controls">
+                <button class="control-btn start">▶ Iniciar</button>
+                <button class="control-btn reset">↻ Reiniciar</button>
+            </div>
+        </div>
+        
+        <div class="tasks">
+            <h2>Tarefas</h2>
+            <div class="task-input">
+                <input type="text" placeholder="Adicionar nova tarefa...">
+                <button>+</button>
+            </div>
+            <div class="task-item">
+                <div class="task-checkbox"></div>
+                <div class="task-text">Estudar para prova</div>
+            </div>
+            <div class="task-item">
+                <div class="task-checkbox done"></div>
+                <div class="task-text done">Ler documentação</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
