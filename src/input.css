@@ -1,0 +1,114 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Nunito:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-everforest-bg-light dark:bg-everforest-bg-dark text-everforest-fg-light dark:text-everforest-fg-dark font-nunito transition-colors duration-300;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-3 sm:px-4 py-2 rounded-lg font-medium 
+           relative border-b-4 min-h-[44px] /* Melhora acessibilidade touch */
+           bg-everforest-button-blue text-white
+           hover:brightness-110 active:border-b-0 
+             active:translate-y-[1px] active:brightness-95 active:mt-1
+           transition-all duration-150 text-center;
+  }
+
+  .btn.active {
+    @apply mt-1 border-b-0 translate-y-[1px] brightness-95;
+  }
+
+  .btn-primary {
+    @apply bg-everforest-button-green border-[#86a065];
+  }
+
+  .btn-secondary {
+    @apply bg-everforest-button-blue border-[#669a92];
+  }
+
+  .btn-accent {
+    @apply bg-everforest-button-orange border-[#c27b5d];
+  }
+
+  .btn-danger {
+    @apply bg-everforest-button-red border-[#bf6668];
+  }
+
+  .card-3d {
+    @apply relative border-b-4 border-2 border-opacity-50 border-everforest-border-dark
+           bg-everforest-surface-light dark:bg-everforest-surface-dark
+           dark:border-everforest-border-dark;
+  }
+
+  .input {
+    @apply px-3 py-2 sm:py-3 rounded-lg min-h-[44px] /* Melhora acessibilidade touch */
+           bg-everforest-surface-light dark:bg-everforest-surface-dark
+           border-2 border-everforest-border-light dark:border-everforest-border-dark
+           focus:outline-none focus:ring-2 focus:ring-everforest-button-green
+           transition-all duration-150;
+  }
+
+  /* Checkbox customizado no estilo Everforest */
+  .everforest-checkbox {
+    @apply appearance-none w-5 h-5 rounded-md border-2 border-everforest-border-light dark:border-everforest-border-dark
+           bg-everforest-surface-light dark:bg-everforest-surface-dark
+           relative cursor-pointer transition-all duration-200
+           hover:border-everforest-button-green focus:outline-none focus:ring-2 focus:ring-everforest-button-green focus:ring-opacity-50;
+  }
+
+  .everforest-checkbox:checked {
+    @apply bg-everforest-button-green border-everforest-button-green;
+  }
+
+  .everforest-checkbox:checked::before {
+    content: "";
+    @apply absolute inset-0 flex items-center justify-center;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L6 9.793l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .everforest-checkbox:hover:not(:checked) {
+    @apply bg-everforest-button-green bg-opacity-10;
+  }
+
+  .everforest-checkbox:focus {
+    @apply ring-2 ring-everforest-button-green ring-opacity-50;
+  }
+
+  /* Animação suave para o checkbox */
+  .everforest-checkbox {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .everforest-checkbox:checked {
+    transform: scale(1.05);
+  }
+
+  .everforest-checkbox:active {
+    transform: scale(0.95);
+  }
+
+  /* Melhorias específicas para mobile */
+  @media (max-width: 640px) {
+    .card-3d {
+      @apply border-b-2; /* Bordas menores em mobile */
+    }
+    
+    .btn {
+      @apply border-b-2; /* Bordas menores em mobile */
+    }
+    
+    /* Aumenta área de toque para checkboxes */
+    .everforest-checkbox {
+      @apply w-6 h-6;
+    }
+  }
+}

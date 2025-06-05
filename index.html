@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pomodoro</title>
+    <link href="./dist/output.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body class="min-h-screen p-3 sm:p-4 md:p-8 font-jetbrains">
+    <!-- Header with theme toggle -->
+    <header class="flex justify-center items-center mb-6 sm:mb-8">
+      <div class="flex gap-2 sm:gap-4">
+        <button id="settingsBtn" class="btn btn-accent text-sm sm:text-base" title="Configurações">
+          <i class="fas fa-cog"></i>
+        </button>
+        <button id="themeToggle" class="btn btn-secondary text-sm sm:text-base" title="Alternar tema">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main timer section -->
+    <main class="max-w-2xl mx-auto px-2 sm:px-4">
+      <div class="card-3d rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
+        <!-- Timer mode selection -->
+        <div class="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
+          <button class="btn btn-primary text-sm sm:text-base w-full sm:w-auto" data-mode="pomodoro">Pomodoro</button>
+          <button class="btn btn-secondary text-sm sm:text-base w-full sm:w-auto" data-mode="shortBreak">
+            Pausa Curta
+          </button>
+          <button class="btn btn-accent text-sm sm:text-base w-full sm:w-auto" data-mode="longBreak">
+            Pausa Longa
+          </button>
+        </div>
+
+        <!-- Cycle indicator -->
+        <div class="text-center mb-4">
+          <div class="inline-flex items-center gap-1 px-3 py-1 bg-everforest-surface-light dark:bg-everforest-surface-dark rounded-lg border border-everforest-border-light dark:border-everforest-border-dark">
+            <span class="text-xs sm:text-sm text-everforest-fg-light dark:text-everforest-fg-dark">Ciclo:</span>
+            <div id="cycleIndicator" class="flex items-center gap-1">
+              <!-- Cicle dots will be generated here -->
+            </div>
+            <span id="cycleText" class="text-xs sm:text-sm font-medium text-everforest-fg-light dark:text-everforest-fg-dark">1/4</span>
+          </div>
+        </div>
+
+        <!-- Timer display -->
+        <div class="text-center mb-6 sm:mb-8">
+          <div id="timer" class="font-jetbrains text-4xl sm:text-6xl lg:text-8xl mb-4 leading-tight">
+            25:00
+          </div>
+          <div
+            class="h-2 bg-everforest-bg-light dark:bg-everforest-bg-dark rounded-full overflow-hidden"
+          >
+            <div
+              id="progress"
+              class="h-full bg-everforest-button-green w-0 transition-all duration-1000"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Timer controls -->
+        <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+          <button id="startBtn" class="btn btn-primary text-sm sm:text-base w-full sm:w-auto">
+            <i class="fas fa-play mr-2"></i>Iniciar
+          </button>
+          <button id="resetBtn" class="btn btn-accent text-sm sm:text-base w-full sm:w-auto">
+            <i class="fas fa-redo-alt mr-2"></i>Reiniciar
+          </button>
+        </div>
+      </div>
+
+      <!-- Task management section -->
+      <div class="card-3d rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
+        <h2 class="text-lg sm:text-xl font-bold mb-4">Tarefas</h2>
+
+        <!-- Add task form -->
+        <form id="taskForm" class="flex flex-col sm:flex-row gap-2 mb-4 sm:mb-6">
+          <input
+            type="text"
+            id="taskInput"
+            placeholder="Adicionar nova tarefa..."
+            class="input flex-grow text-sm sm:text-base"
+            required
+          />
+          <button type="submit" class="btn btn-primary text-sm sm:text-base sm:w-auto">
+            <i class="fas fa-plus sm:mr-0"></i>
+            <span class="sm:hidden ml-2">Adicionar</span>
+          </button>
+        </form>
+
+        <!-- Task filters -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4">
+          <span id="taskCount" class="text-xs sm:text-sm">0 tarefas restantes</span>
+          <button id="toggleCompleted" class="btn btn-secondary text-xs sm:text-sm">
+            Mostrar Concluídas
+          </button>
+        </div>
+
+        <!-- Task list -->
+        <ul id="taskList" class="space-y-2"></ul>
+      </div>
+    </main>
+
+    <!-- Settings modal -->
+    <div
+      id="settingsModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4"
+    >
+      <div class="card-3d rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-md w-full max-h-screen overflow-y-auto">
+        <div class="flex justify-between items-center mb-4 sm:mb-6">
+          <h2 class="text-lg sm:text-xl font-bold">Configurações</h2>
+          <button id="closeSettings" class="btn btn-danger text-sm">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form id="settingsForm" class="space-y-3 sm:space-y-4">
+          <div>
+            <label class="block mb-2 text-sm sm:text-base">Duração do Pomodoro (minutos)</label>
+            <input
+              type="number"
+              id="pomodoroDuration"
+              class="input w-full text-sm sm:text-base"
+              min="1"
+              max="60"
+              value="25"
+            />
+          </div>
+          <div>
+            <label class="block mb-2 text-sm sm:text-base">Duração da Pausa Curta (minutos)</label>
+            <input
+              type="number"
+              id="shortBreakDuration"
+              class="input w-full text-sm sm:text-base"
+              min="1"
+              max="30"
+              value="5"
+            />
+          </div>
+          <div>
+            <label class="block mb-2 text-sm sm:text-base">Duração da Pausa Longa (minutos)</label>
+            <input
+              type="number"
+              id="longBreakDuration"
+              class="input w-full text-sm sm:text-base"
+              min="1"
+              max="60"
+              value="15"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary w-full text-sm sm:text-base">
+            Salvar Configurações
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Alarm modal -->
+    <div
+      id="alarmModal"
+      class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 p-4"
+    >
+      <div class="card-3d rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-md w-full text-center">
+        <div class="mb-4 sm:mb-6">
+          <i class="fas fa-bell text-4xl sm:text-6xl text-everforest-button-green mb-3 sm:mb-4"></i>
+          <h2 class="text-xl sm:text-2xl font-bold mb-2">⏰ Timer Concluído!</h2>
+          <p
+            class="text-sm sm:text-base text-everforest-text-secondary dark:text-everforest-text-secondary-dark"
+          >
+            Sua sessão foi finalizada. Clique para parar o alarme.
+          </p>
+        </div>
+        <button id="stopAlarmBtn" class="btn btn-primary w-full text-sm sm:text-base">
+          <i class="fas fa-stop mr-2"></i>Parar Alarme
+        </button>
+      </div>
+    </div>
+
+    <script src="./src/script.js"></script>
+  </body>
+</html>
