@@ -2,7 +2,7 @@
   "name": "Pomodoro Timer",
   "short_name": "Pomodoro",
   "description": "Um cronômetro Pomodoro bonito com gerenciamento de tarefas",
-  "start_url": "/",
+  "start_url": "/https:/Pomodoro/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
