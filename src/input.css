@@ -16,12 +16,12 @@
            relative border-b-4 min-h-[44px] /* Melhora acessibilidade touch */
            bg-everforest-button-blue text-white
            hover:brightness-110 active:border-b-0 
-             active:translate-y-[1px] active:brightness-95 active:mt-1
+             active:translate-y-[1px] active:brightness-95 
            transition-all duration-150 text-center;
   }
 
   .btn.active {
-    @apply mt-1 border-b-0 translate-y-[1px] brightness-95;
+    @apply border-b-0 translate-y-[1px] brightness-95;
   }
 
   .btn-primary {
