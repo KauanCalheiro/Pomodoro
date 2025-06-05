@@ -1,55 +1,81 @@
-# Pomodoro Everforest
+# 🍃 Pomodoro Everforest
 
-Uma aplicação de cronômetro Pomodoro bonita e minimalista com gerenciamento de tarefas, construída com HTML, Tailwind CSS e JavaScript vanilla. Apresenta um design lindo inspirado no Everforest com suporte ao modo escuro.
+Um cronômetro Pomodoro **moderno e responsivo**, com gerenciamento de tarefas, design inspirado no tema Everforest e funcionalidades avançadas como **PWA**, **notificações**, **wake lock**, e muito mais!
 
-## Recursos
+🔗 **[Acesse agora](https://kauancalheiro.github.io/Pomodoro/)**
 
-- 🕒 Três modos de cronômetro:
-  - Pomodoro (25 minutos)
-  - Pausa Curta (5 minutos)
-  - Pausa Longa (15 minutos)
-- ⚙️ Durações de cronômetro configuráveis
-- 🌓 Alternância entre tema escuro/claro com transições suaves
-- 📝 Sistema de gerenciamento de tarefas
-  - Adicionar, concluir e excluir tarefas
-  - Alternar visibilidade de tarefas concluídas
-  - Armazenamento persistente usando localStorage
-- 🔔 Notificações de áudio e do navegador quando o cronômetro termina
-- 📱 Design responsivo para todos os dispositivos
-- 🎨 Belo tema Everforest com botões elevados 3D
+---
 
-## Configuração
+## ✨ Destaques
 
-1. Instalar dependências:
+### ⏰ Timer Inteligente
+
+* 3 modos: 🍅 Pomodoro, ☕ Pausa Curta, 🏖️ Pausa Longa
+* Ciclos automáticos e durações personalizáveis
+* Barra de progresso animada e título dinâmico
+* Controles simples: iniciar, pausar, resetar
+
+### 📝 Tarefas Avançadas
+
+* Adicione, conclua ou exclua tarefas facilmente
+* Alternância de visibilidade e contador em tempo real
+* Dados salvos com **LocalStorage**
+
+### 🎨 Interface Moderna
+
+* Tema Everforest (claro/escuro com transição suave)
+* Layout responsivo e minimalista
+* Botões com efeito 3D e animações suaves
+
+### 🔔 Notificações & Alarme
+
+* Som, vibração, modais e notificações nativas
+* Controle total sobre o alarme
+
+### 📱 Progressive Web App (PWA)
+
+* Instalável no celular/PC
+* Funciona offline com Service Worker
+* Ícone personalizado e manifest completo
+
+### 🔋 Wake Lock
+
+* Mantém a tela ativa durante o uso
+* Ativação automática e segura
+
+---
+
+## ⚙️ Tecnologias
+
+* **Frontend:** HTML5, Tailwind CSS, JavaScript Vanilla
+* **APIs:** Wake Lock, Notification, Service Worker, LocalStorage
+* **Extras:** Font Awesome, Google Fonts
+
+---
+
+## 🎨 Paleta Everforest
+
+| Tema Claro           | Tema Escuro          | Destaques            |
+| -------------------- | -------------------- | -------------------- |
+| `#fdf6e3` Fundo      | `#2f383e` Fundo      | `#a7c080` Primária   |
+| `#f4f0d9` Superfície | `#374145` Superfície | `#83c092` Secundária |
+| `#5c6a72` Texto      | `#d3c6aa` Texto      | `#e67e80` Alerta     |
+
+---
+
+## 🚀 Como Usar
+
+1. Clone o repositório e instale dependências:
+
    ```bash
    npm install
-   ```
-
-2. Iniciar o processo de build do Tailwind CSS:
-   ```bash
    npm run dev
    ```
+2. Ou acesse diretamente online no link acima.
 
-3. Abrir `index.html` no seu navegador
+---
 
-## Tecnologias Utilizadas
+## 📄 Licença
 
-- HTML5
-- Tailwind CSS para estilização
-- JavaScript Vanilla
-- Ícones Font Awesome
-- Google Fonts (Inter, Nunito, JetBrains Mono)
-- LocalStorage para persistência de dados
-
-## Paleta de Cores
-
-A aplicação usa o esquema de cores Everforest:
-- Fundo do tema claro: #fdf6e3
-- Fundo do tema escuro: #2f383e
-- Cor primária: #a7c080
-- Cor secundária: #83c092
-- Cores do texto se adaptam ao tema
-
-## Licença
-
-Licença MIT - sinta-se livre para usar este código para qualquer propósito! 
+MIT — Livre para uso, modificação e distribuição.
+💬 **Feedbacks e contribuições são bem-vindos!**
