@@ -674,6 +674,13 @@ document.addEventListener('DOMContentLoaded', () => {
         editTaskProgressValue.textContent = `${e.target.value}%`;
     });
 
+    // Toggle completed tasks
+    toggleCompleted.addEventListener('click', () => {
+        tasks.showCompleted = !tasks.showCompleted;
+        toggleCompleted.textContent = tasks.showCompleted ? 'Ocultar Concluídas' : 'Mostrar Concluídas';
+        renderTasks();
+    });
+
     // Validação dos campos de data e hora
     const newTaskTime = document.getElementById('newTaskTime');
     const newTaskDate = document.getElementById('newTaskDate');
@@ -862,13 +869,6 @@ taskForm.addEventListener('submit', (e) => {
         addTask(text);
         taskInput.value = '';
     }
-});
-
-// Remove old task form event listener
-toggleCompleted.addEventListener('click', () => {
-    tasks.showCompleted = !tasks.showCompleted;
-    toggleCompleted.textContent = tasks.showCompleted ? 'Ocultar Concluídas' : 'Mostrar Concluídas';
-    renderTasks();
 });
 
 // Stop alarm button event listener
