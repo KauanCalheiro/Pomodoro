@@ -48,6 +48,48 @@ const taskList = document.getElementById('taskList');
 const taskCount = document.getElementById('taskCount');
 const toggleCompleted = document.getElementById('toggleCompleted');
 
+// Variáveis globais para edição de tarefas
+let currentEditingTaskId = null;
+const editTaskModal = document.getElementById('editTaskModal');
+const editTaskInput = document.getElementById('editTaskInput');
+
+// Funções auxiliares para tarefas
+function formatDateTime(date, time) {
+    if (!time) {
+        // Se não tiver hora, retorna apenas a data às 00:00
+        const taskDate = new Date(date);
+        taskDate.setHours(0, 0, 0, 0);
+        return taskDate;
+    }
+    
+    const [hours, minutes] = time.split(':');
+    const taskDate = new Date(date);
+    taskDate.setHours(parseInt(hours), parseInt(minutes), 0);
+    return taskDate;
+}
+
+function getFormattedDateTime(date) {
+    return {
+        date: date.toISOString().split('T')[0],
+        time: date.toTimeString().slice(0, 5)
+    };
+}
+
+function getRemainingTime(dueDate) {
+    const now = new Date();
+    const diff = dueDate - now;
+    
+    if (diff < 0) return 'Atrasado';
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
+}
+
 // Funções do Wake Lock para manter a tela ativa
 async function requestWakeLock() {
     try {
@@ -274,27 +316,135 @@ function showTimerCompleteNotification() {
     }
 }
 
+// Funções de gerenciamento de modais
+function showEditTaskModal(taskId, task) {
+    currentEditingTaskId = taskId;
+    
+    editTaskInput.value = task.text;
+    
+    // Preencher data e hora se existirem
+    const editTaskDate = document.getElementById('editTaskDate');
+    const editTimeContainer = document.getElementById('editTimeContainer');
+    
+    if (task.dueDate) {
+        const dueDate = new Date(task.dueDate);
+        editTaskDate.value = dueDate.toISOString().split('T')[0];
+        
+        // Se tem data, sempre mostra o campo de hora
+        editTimeContainer.classList.remove('hidden');
+        setTimeout(() => {
+            editTimeContainer.classList.remove('opacity-0', 'max-h-0');
+            editTimeContainer.classList.add('opacity-100', 'max-h-24');
+        }, 10);
+
+        // Preenche a hora apenas se a tarefa tiver hora definida
+        if (task.hasTime) {
+            document.getElementById('editTaskTime').value = dueDate.toTimeString().slice(0, 5);
+        } else {
+            document.getElementById('editTaskTime').value = '';
+        }
+    } else {
+        editTaskDate.value = '';
+        editTimeContainer.classList.remove('opacity-100', 'max-h-24');
+        editTimeContainer.classList.add('opacity-0', 'max-h-0', 'hidden');
+        document.getElementById('editTaskTime').value = '';
+    }
+    
+    // Preencher progresso se existir
+    const progress = task.progress || 0;
+    document.getElementById('editTaskProgress').value = progress;
+    document.getElementById('editTaskProgressValue').textContent = `${progress}%`;
+    
+    editTaskModal.classList.remove('hidden');
+    editTaskModal.classList.add('flex');
+    editTaskInput.focus();
+}
+
+function hideEditTaskModal() {
+    const editTaskModal = document.getElementById('editTaskModal');
+    const editTaskInput = document.getElementById('editTaskInput');
+    if (editTaskModal && editTaskInput) {
+        editTaskModal.classList.remove('flex');
+        editTaskModal.classList.add('hidden');
+        editTaskInput.value = '';
+        currentEditingTaskId = null;
+    }
+}
+
 // Task Management Functions
 function createTaskElement(task) {
     const li = document.createElement('li');
+    const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
+    
     li.className = `flex items-center justify-between p-3 rounded-lg card-3d ${
         task.completed ? 'opacity-75' : ''
-    }`;
+    } ${isOverdue && !task.completed ? 'bg-red-50 dark:bg-red-900/20' : ''}`;
+    
+    // Preparar informações adicionais se existirem
+    let additionalInfo = '';
+    
+    if (task.dueDate) {
+        const dueDate = new Date(task.dueDate);
+        const remainingTime = getRemainingTime(dueDate);
+        const hasTime = task.hasTime; // Nova propriedade para verificar se tem hora
+
+        additionalInfo += `
+            <span class="flex items-center gap-1">
+                <i class="fas fa-clock"></i>
+                ${dueDate.toLocaleDateString()}
+                ${hasTime ? dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                ${remainingTime ? `(${remainingTime})` : ''}
+            </span>
+        `;
+    }
+    
+    // Mostrar progresso apenas se for maior que 0
+    if (task.progress > 0) {
+        additionalInfo += `
+            <div class="flex items-center gap-1">
+                <i class="fas fa-tasks"></i>
+                <div class="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-everforest-button-green" style="width: ${task.progress}%"></div>
+                </div>
+                ${task.progress}%
+            </div>
+        `;
+    }
+    
+    // Adicionar div de informações adicionais apenas se houver informações
+    const additionalInfoHtml = additionalInfo ? `
+        <div class="mt-2 flex items-center gap-4 text-xs text-everforest-text-secondary dark:text-everforest-text-secondary-dark">
+            ${additionalInfo}
+        </div>
+    ` : '';
     
     li.innerHTML = `
-        <div class="flex items-center gap-3">
-            <input type="checkbox" class="everforest-checkbox"
-                   ${task.completed ? 'checked' : ''}>
-            <span class="${task.completed ? 'line-through opacity-50' : ''}">${task.text}</span>
+        <div class="flex-1">
+            <div class="flex items-center gap-3">
+                <input type="checkbox" class="everforest-checkbox"
+                       ${task.completed ? 'checked' : ''}>
+                <span class="${task.completed ? 'line-through opacity-50' : ''}">${task.text}</span>
+            </div>
+            ${additionalInfoHtml}
         </div>
-        <button class="delete-task btn btn-danger text-sm">
-            <i class="fas fa-trash"></i>
-        </button>
+        <div class="flex gap-2">
+            <button class="edit-task btn btn-secondary text-sm">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="delete-task btn btn-danger text-sm">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
     `;
     
     // Event listeners
     const checkbox = li.querySelector('input[type="checkbox"]');
     checkbox.addEventListener('change', () => toggleTask(task.id));
+    
+    const editBtn = li.querySelector('.edit-task');
+    editBtn.addEventListener('click', () => {
+        showEditTaskModal(task.id, task);
+    });
     
     const deleteBtn = li.querySelector('.delete-task');
     deleteBtn.addEventListener('click', () => deleteTask(task.id));
@@ -308,6 +458,19 @@ function renderTasks() {
         tasks.showCompleted ? true : !task.completed
     );
     
+    // Ordenar tarefas: primeiro as que têm data de vencimento, depois as sem data
+    filteredTasks.sort((a, b) => {
+        // Se ambas têm data, ordenar por data
+        if (a.dueDate && b.dueDate) {
+            return new Date(a.dueDate) - new Date(b.dueDate);
+        }
+        // Se apenas uma tem data, ela vem primeiro
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        // Se nenhuma tem data, manter a ordem original
+        return 0;
+    });
+    
     filteredTasks.forEach(task => {
         taskList.appendChild(createTaskElement(task));
     });
@@ -318,12 +481,26 @@ function renderTasks() {
     localStorage.setItem('pomodoroTasks', JSON.stringify(tasks.items));
 }
 
-function addTask(text) {
+function addTask(text, date, time, progress) {
     const task = {
         id: Date.now(),
         text,
         completed: false
     };
+
+    // Validar data e hora
+    if (time && !date) {
+        // Se tem hora mas não tem data, não salva nenhum dos dois
+        console.warn('Hora informada sem data. A hora será ignorada.');
+    } else if (date) {
+        // Se tem data, salva com ou sem hora
+        task.dueDate = formatDateTime(date, time).toISOString();
+        task.hasTime = !!time; // Marca se tem hora ou não
+    }
+
+    // Adicionar progresso mesmo se for 0
+    task.progress = parseInt(progress) || 0;
+
     tasks.items.push(task);
     renderTasks();
 }
@@ -441,6 +618,168 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set initial page title
     resetPageTitle();
+
+    // Initialize modal elements
+    const newTaskModal = document.getElementById('newTaskModal');
+    const openNewTaskBtn = document.getElementById('openNewTaskBtn');
+    const closeNewTask = document.getElementById('closeNewTask');
+    const newTaskForm = document.getElementById('newTaskForm');
+    const newTaskInput = document.getElementById('newTaskInput');
+
+    const closeEditTask = document.getElementById('closeEditTask');
+    const editTaskForm = document.getElementById('editTaskForm');
+
+    // Modal management functions
+    function showNewTaskModal() {
+        newTaskModal.classList.remove('hidden');
+        newTaskModal.classList.add('flex');
+        newTaskInput.focus();
+    }
+
+    function hideNewTaskModal() {
+        newTaskModal.classList.remove('flex');
+        newTaskModal.classList.add('hidden');
+        newTaskInput.value = '';
+    }
+
+    // Event listeners for modals
+    openNewTaskBtn.addEventListener('click', showNewTaskModal);
+    closeNewTask.addEventListener('click', hideNewTaskModal);
+    closeEditTask.addEventListener('click', hideEditTaskModal);
+
+    // Close modals when clicking outside
+    newTaskModal.addEventListener('click', (e) => {
+        if (e.target === newTaskModal) {
+            hideNewTaskModal();
+        }
+    });
+
+    editTaskModal.addEventListener('click', (e) => {
+        if (e.target === editTaskModal) {
+            hideEditTaskModal();
+        }
+    });
+
+    // Progress range input handlers
+    const newTaskProgress = document.getElementById('newTaskProgress');
+    const newTaskProgressValue = document.getElementById('newTaskProgressValue');
+    const editTaskProgress = document.getElementById('editTaskProgress');
+    const editTaskProgressValue = document.getElementById('editTaskProgressValue');
+
+    newTaskProgress.addEventListener('input', (e) => {
+        newTaskProgressValue.textContent = `${e.target.value}%`;
+    });
+
+    editTaskProgress.addEventListener('input', (e) => {
+        editTaskProgressValue.textContent = `${e.target.value}%`;
+    });
+
+    // Validação dos campos de data e hora
+    const newTaskTime = document.getElementById('newTaskTime');
+    const newTaskDate = document.getElementById('newTaskDate');
+    const editTaskTime = document.getElementById('editTaskTime');
+    const editTaskDate = document.getElementById('editTaskDate');
+
+    // Função auxiliar para validação
+    function validateDateTime(timeInput, dateInput) {
+        timeInput.addEventListener('change', () => {
+            if (timeInput.value && !dateInput.value) {
+                alert('Para informar a hora, é necessário informar a data.');
+                timeInput.value = '';
+            }
+        });
+    }
+
+    // Aplicar validação nos formulários
+    validateDateTime(newTaskTime, newTaskDate);
+    validateDateTime(editTaskTime, editTaskDate);
+
+    // Função para controlar visibilidade do campo de hora
+    function toggleTimeFieldVisibility(dateInput, timeContainer) {
+        if (dateInput.value) {
+            // Primeiro remove hidden para iniciar a animação
+            timeContainer.classList.remove('hidden');
+            // Pequeno delay para garantir que a transição seja suave
+            setTimeout(() => {
+                timeContainer.classList.remove('opacity-0', 'max-h-0');
+                timeContainer.classList.add('opacity-100', 'max-h-24');
+            }, 10);
+        } else {
+            // Primeiro anima a opacidade e altura
+            timeContainer.classList.remove('opacity-100', 'max-h-24');
+            timeContainer.classList.add('opacity-0', 'max-h-0');
+            // Após a animação, esconde completamente
+            setTimeout(() => {
+                timeContainer.classList.add('hidden');
+                timeContainer.querySelector('input[type="time"]').value = '';
+            }, 300); // Mesmo tempo da duração da transição
+        }
+    }
+
+    // Controlar visibilidade dos campos de hora
+    const newTimeContainer = document.getElementById('newTimeContainer');
+    const editTimeContainer = document.getElementById('editTimeContainer');
+
+    // Inicializar estado dos campos de hora
+    toggleTimeFieldVisibility(newTaskDate, newTimeContainer);
+    toggleTimeFieldVisibility(editTaskDate, editTimeContainer);
+
+    // Adicionar listeners para mudanças nos campos de data
+    newTaskDate.addEventListener('input', () => toggleTimeFieldVisibility(newTaskDate, newTimeContainer));
+    editTaskDate.addEventListener('input', () => toggleTimeFieldVisibility(editTaskDate, editTimeContainer));
+
+    // Adicionar event listeners para os botões de limpar
+    document.querySelectorAll('.clear-date').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const dateInput = e.target.closest('div').querySelector('input[type="date"]');
+            const timeContainer = dateInput.id === 'newTaskDate' ? newTimeContainer : editTimeContainer;
+            dateInput.value = '';
+            toggleTimeFieldVisibility(dateInput, timeContainer);
+        });
+    });
+
+    document.querySelectorAll('.clear-time').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const timeInput = e.target.closest('div').querySelector('input[type="time"]');
+            timeInput.value = '';
+        });
+    });
+
+    // Handle new task submission
+    newTaskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = newTaskInput.value.trim();
+        const date = newTaskDate.value;
+        const time = newTaskTime.value;
+        const progress = document.getElementById('newTaskProgress').value;
+        
+        if (text) {
+            if (time && !date) {
+                alert('Para informar a hora, é necessário informar a data.');
+                return;
+            }
+            addTask(text, date, time, progress);
+            hideNewTaskModal();
+        }
+    });
+
+    // Handle edit task submission
+    editTaskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = editTaskInput.value.trim();
+        const date = editTaskDate.value;
+        const time = editTaskTime.value;
+        const progress = document.getElementById('editTaskProgress').value;
+        
+        if (text && currentEditingTaskId) {
+            if (time && !date) {
+                alert('Para informar a hora, é necessário informar a data.');
+                return;
+            }
+            editTask(currentEditingTaskId, text, date, time, progress);
+            hideEditTaskModal();
+        }
+    });
 });
 
 startBtn.addEventListener('click', startTimer);
@@ -525,6 +864,7 @@ taskForm.addEventListener('submit', (e) => {
     }
 });
 
+// Remove old task form event listener
 toggleCompleted.addEventListener('click', () => {
     tasks.showCompleted = !tasks.showCompleted;
     toggleCompleted.textContent = tasks.showCompleted ? 'Ocultar Concluídas' : 'Mostrar Concluídas';
@@ -568,5 +908,33 @@ async function getWakeLock() {
         });
     } catch (err) {
         console.error(`Erro ao obter Wake Lock: ${err}`);
+    }
+}
+
+function editTask(id, text, date, time, progress) {
+    const task = tasks.items.find(t => t.id === id);
+    if (task) {
+        task.text = text;
+        
+        // Validar data e hora
+        if (time && !date) {
+            // Se tem hora mas não tem data, não salva nenhum dos dois
+            console.warn('Hora informada sem data. A hora será ignorada.');
+            delete task.dueDate;
+            delete task.hasTime;
+        } else if (date) {
+            // Se tem data, salva com ou sem hora
+            task.dueDate = formatDateTime(date, time).toISOString();
+            task.hasTime = !!time; // Marca se tem hora ou não
+        } else {
+            // Se não tem data, remove a data existente
+            delete task.dueDate;
+            delete task.hasTime;
+        }
+        
+        // Atualizar progresso mesmo se for 0
+        task.progress = parseInt(progress) || 0;
+        
+        renderTasks();
     }
 }

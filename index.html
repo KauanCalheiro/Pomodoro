@@ -109,20 +109,10 @@
       <div class="card-3d rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
         <h2 class="text-lg sm:text-xl font-bold mb-4">Tarefas</h2>
 
-        <!-- Add task form -->
-        <form id="taskForm" class="flex flex-col sm:flex-row gap-2 mb-4 sm:mb-6">
-          <input
-            type="text"
-            id="taskInput"
-            placeholder="Adicionar nova tarefa..."
-            class="input flex-grow text-sm sm:text-base"
-            required
-          />
-          <button type="submit" class="btn btn-primary text-sm sm:text-base sm:w-auto">
-            <i class="fas fa-plus sm:mr-0"></i>
-            <span class="sm:hidden ml-2">Adicionar</span>
-          </button>
-        </form>
+        <!-- Add task button -->
+        <button id="openNewTaskBtn" class="btn btn-primary text-sm sm:text-base w-full sm:w-auto mb-4 sm:mb-6">
+          <i class="fas fa-plus mr-2"></i>Nova Tarefa
+        </button>
 
         <!-- Task filters -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4">
@@ -209,6 +199,150 @@
         <button id="stopAlarmBtn" class="btn btn-primary w-full text-sm sm:text-base">
           <i class="fas fa-stop mr-2"></i>Parar Alarme
         </button>
+      </div>
+    </div>
+
+    <!-- New Task Modal -->
+    <div
+      id="newTaskModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"
+    >
+      <div class="card-3d rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-md w-full">
+        <div class="flex justify-between items-center mb-4 sm:mb-6">
+          <h2 class="text-lg sm:text-xl font-bold">Nova Tarefa</h2>
+          <button id="closeNewTask" class="btn btn-danger text-sm">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form id="newTaskForm" class="space-y-4">
+          <div>
+            <label for="newTaskInput" class="block mb-2 text-sm sm:text-base">Descrição da Tarefa</label>
+            <input
+              type="text"
+              id="newTaskInput"
+              class="input w-full text-sm sm:text-base"
+              placeholder="Digite sua tarefa..."
+              required
+            />
+          </div>
+          <div>
+            <label for="newTaskDate" class="block mb-2 text-sm sm:text-base">Data</label>
+            <div class="flex gap-2 w-full">
+              <input
+                type="date"
+                id="newTaskDate"
+                class="input w-full text-sm sm:text-base"
+              />
+              <button type="button" class="clear-date btn btn-secondary text-sm shrink-0" title="Limpar data">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div id="newTimeContainer" class="hidden transition-all duration-300 ease-in-out opacity-0 max-h-0 overflow-hidden">
+            <label for="newTaskTime" class="block mb-2 text-sm sm:text-base">Hora</label>
+            <div class="flex gap-2 w-full">
+              <input
+                type="time"
+                id="newTaskTime"
+                class="input w-full text-sm sm:text-base"
+              />
+              <button type="button" class="clear-time btn btn-secondary text-sm shrink-0" title="Limpar hora">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label for="newTaskProgress" class="block mb-2 text-sm sm:text-base">
+              Progresso (%)
+              <span id="newTaskProgressValue" class="text-everforest-text-secondary dark:text-everforest-text-secondary-dark">0%</span>
+            </label>
+            <input
+              type="range"
+              id="newTaskProgress"
+              class="w-full"
+              min="0"
+              max="100"
+              value="0"
+              step="5"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary w-full text-sm sm:text-base">
+            <i class="fas fa-plus mr-2"></i>Adicionar Tarefa
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div
+      id="editTaskModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"
+    >
+      <div class="card-3d rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-md w-full">
+        <div class="flex justify-between items-center mb-4 sm:mb-6">
+          <h2 class="text-lg sm:text-xl font-bold">Editar Tarefa</h2>
+          <button id="closeEditTask" class="btn btn-danger text-sm">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form id="editTaskForm" class="space-y-4">
+          <div>
+            <label for="editTaskInput" class="block mb-2 text-sm sm:text-base">Descrição da Tarefa</label>
+            <input
+              type="text"
+              id="editTaskInput"
+              class="input w-full text-sm sm:text-base"
+              placeholder="Digite sua tarefa..."
+              required
+            />
+          </div>
+          <div>
+            <label for="editTaskDate" class="block mb-2 text-sm sm:text-base">Data</label>
+            <div class="flex gap-2 w-full">
+              <input
+                type="date"
+                id="editTaskDate"
+                class="input w-full text-sm sm:text-base"
+              />
+              <button type="button" class="clear-date btn btn-secondary text-sm shrink-0" title="Limpar data">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div id="editTimeContainer" class="hidden transition-all duration-300 ease-in-out opacity-0 max-h-0 overflow-hidden">
+            <label for="editTaskTime" class="block mb-2 text-sm sm:text-base">Hora</label>
+            <div class="flex gap-2 w-full">
+              <input
+                type="time"
+                id="editTaskTime"
+                class="input w-full text-sm sm:text-base"
+              />
+              <button type="button" class="clear-time btn btn-secondary text-sm shrink-0" title="Limpar hora">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label for="editTaskProgress" class="block mb-2 text-sm sm:text-base">
+              Progresso (%)
+              <span id="editTaskProgressValue" class="text-everforest-text-secondary dark:text-everforest-text-secondary-dark">0%</span>
+            </label>
+            <input
+              type="range"
+              id="editTaskProgress"
+              class="w-full"
+              min="0"
+              max="100"
+              value="0"
+              step="5"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary w-full text-sm sm:text-base">
+            <i class="fas fa-save mr-2"></i>Salvar Alterações
+          </button>
+        </form>
       </div>
     </div>
 
